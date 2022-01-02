@@ -1,0 +1,25 @@
+// Custom element containers.
+.artist-chips {
+	display: flex;
+	flex-wrap: wrap;
+	margin-top: 1rem;
+}
+.create-playlist-container {
+	background: var(--background-2);
+	border-radius: var(--border-radius) var(--border-radius) 0 0;
+	height: 100%;
+}
+.create-playlist-container-inner {
+	align-self: start;
+	padding: 1rem;
+	position: sticky;
+	top: 1rem;
+}
+.recently-played {
+	margin-bottom: 24px;
+}
+.search-container {
+	grid-column: 1 / -1;
+	position: relative;
+	padding-top: 2rem;
+}

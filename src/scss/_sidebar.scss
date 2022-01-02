@@ -1,0 +1,62 @@
+// Sidebar.
+.avatar {
+	background: var(--background-2);
+	border: var(--border-primary);
+	border-radius: 50%;
+	height: 40px;
+	width: 40px;
+}
+
+.bg-gradient-sidebar {
+	background: rgb(113,26,199);
+	background: radial-gradient(circle, rgba(113,26,199,.3) 0%, rgba(22,35,137,0) 50%);
+	bottom: -200px;
+	border-radius: 50%;
+	height: 600px;
+	position: fixed;
+	right: -300px;
+	width: 800px;
+	z-index: -1;
+}
+
+.sidebar {
+	background-color: var(--background-2);
+	bottom: 0;
+	padding: 1rem;
+	position: fixed;
+	right: 0;
+	top: 0;
+	transform: translateX(100%);
+	transition: .1s;
+	width: 400px;
+
+	&.sidebar-open {
+		transform: translateX(0);
+	}
+}
+
+.sidebar-toggle {
+	background: var(--background-4);
+	border: 0;
+	border-radius: 50%;
+	cursor: pointer;
+	height: 40px;
+	position: absolute;
+	right: 1rem;
+	top: 1rem;
+	transition: .1s;
+	width: 40px;
+
+	&:hover {
+		background: lighten($BACKGROUND_4, 5);
+	}
+
+	svg {
+		width: 16px;
+	}
+}
+
+.username {
+	color: var(--text-colour-primary);
+	margin: 1rem 0;
+}

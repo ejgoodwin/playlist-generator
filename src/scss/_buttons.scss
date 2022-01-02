@@ -1,0 +1,43 @@
+// Buttons.
+button {
+	font-family: var(--font-family-primary);
+}
+.button {
+	border-radius: 5rem;
+	display: inline-block;
+	font-size: 1rem;
+	padding: .75rem 1.5rem;
+	transition: .1s;
+}
+.button:hover {
+	text-decoration: none;
+}
+.button-secondary {
+	background: transparent;
+	border: 2px solid var(--primary-colour);
+	color: var(--text-colour-primary);
+	cursor: pointer;
+	transition: .2s;
+}
+.button-secondary:hover {
+	background: var(--primary-colour);
+}
+.button-primary {
+	background: var(--primary-colour);
+	border: 1px solid var(--primary-colour);
+	color: var(--text-colour-primary);
+	text-decoration: none;
+}
+.button-primary:hover {
+	background: var(--primary-colour-darken);
+}
+.login-button {
+	border-radius: 5rem;
+	margin: 2rem 0 0;
+	padding: 1rem 2rem;
+  }
+#obtain-new-token {
+	bottom: 1rem;
+	position: fixed;
+	right: 1rem;
+}

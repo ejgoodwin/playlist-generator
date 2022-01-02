@@ -1,0 +1,121 @@
+// Base.
+:root {
+	--primary-colour: #{$PRIMARY_COLOUR};
+	--primary-colour-darken: #{$PRIMARY_COLOUR_DARKEN};
+	--secondary-colour: #{$SECONDARY_COLOUR};
+	--tertiary-colour: #{$TERTIARY_COLOUR};
+	
+	--background-1: #{$BACKGROUND_1};
+	--background-2: #{$BACKGROUND_2};
+	--background-3: #{$BACKGROUND_3};
+	--background-4: #{$BACKGROUND_4};
+	--background-5: #{$BACKGROUND_5};
+
+	--border-primary: 1px solid var(--background-5);
+	--border-primary-thick: 2px solid var(--background-5);
+	--border-radius: #{$BORDER_RADIUS};
+
+	--input-placeholder-colour: rgba(255,255,255, .5);
+
+	--font-family-primary: #{$FONT_FAMILY_PRIMARY};
+
+	--text-colour-primary: #{$TEXT_COLOUR_PRIMARY};
+	--text-colour-primary-inverted: #{$TEXT_COLOUR_PRIMARY_INVERTED};
+	--text-colour-secondary: #{$TEXT_COLOUR_SECONDARY};
+
+	--success-colour: #{$SUCCESS_COLOUR};
+	--error-colour: #{$ERROR_COLOUR};
+	--error-colour-bright: #{$ERROR_COLOUR_BRIGHT};
+
+	--track-grid-gap: 8px;
+	--track-grid-template-layout: auto / 50% auto 50px 50px;
+
+	@media screen and (min-width: 800px) {
+		--track-grid-gap: 12px;
+		--track-grid-template-layout: auto / 40% auto 50px 70px 70px;
+	}
+
+}
+
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+html,
+body {
+	min-height: 100%;
+}
+
+body {
+	background: var(--background-1);
+	color: var(--text-colour-primary);
+	font-family: var(--font-family-primary);
+	margin: 0;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.container {
+	padding: 0 16px;
+}
+.main {
+
+	@media screen and (min-width: 800px) {
+		display: grid;
+		grid-template-columns: 2fr 1fr;
+		grid-gap: 1rem;
+	}
+}
+#login, #loggedin {
+display: none;
+}
+#login {
+margin: 60px 0 0;
+text-align: center;
+}
+.login-title {
+	color: var(--text-colour-primary);
+}
+.title {
+	font-size: 1.875rem;
+	margin-top: 0;
+}
+.main-container {
+	@media only screen and (min-width: 1200px) {
+		margin-right: 0;
+		transition: .1s;
+
+		&.sidebar-open {
+			margin-right: 400px;
+		}
+	}
+}
+
+// Background gradients.
+.bg-gradient {
+	background: rgb(60,27,168);
+	background: radial-gradient(circle, rgba(60,27,168,.3) 0%, rgba(22,35,137,0) 50%);
+	border-radius: 50%;
+	height: 600px;
+	position: fixed;
+	width: 800px;
+	z-index: -1;
+}
+
+.bg-gradient-top-left {
+	left: -300px;
+	top: -300px;
+}
+
+.bg-gradient-bottom-left {
+	left: -300px;
+	bottom: -300px;
+}
+
+.bg-gradient-top-right {
+	right: 5%;
+	top: -400px;
+}

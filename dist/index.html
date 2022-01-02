@@ -1,0 +1,186 @@
+<!doctype html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playlist generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="main.css">
+  </head>
+
+  <body>
+    <span class="bg-gradient bg-gradient-top-left"></span>
+    <span class="bg-gradient bg-gradient-bottom-left"></span>
+    <span class="bg-gradient bg-gradient-top-right"></span>
+    <div class="container">
+      <div id="login">
+        <h1 class="login-title">Generate a Spotify playlist</h1>
+        <a href="/login" class="login-button button button-primary">Log in with Spotify</a>
+      </div>
+      <div id="loggedin">
+        <div class="main-container" id="user-profile"></div>
+        <div id="oauth"></div>
+        <button class="sidebar-toggle">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 21"><g id="Group_85" fill="#e0e0e0" data-name="Group 85" transform="translate(-1531 -15)"><rect id="Rectangle_132" width="15" height="3" data-name="Rectangle 132" opacity=".963" rx="1.5" transform="translate(1531 15)"/><rect id="Rectangle_133" width="28" height="3" data-name="Rectangle 133" opacity=".963" rx="1.5" transform="translate(1531 24)"/><rect id="Rectangle_134" width="22" height="3" data-name="Rectangle 134" opacity=".963" rx="1.5" transform="translate(1531 33)"/></g></svg>        </button>
+      </div>
+      <button class="button button-secondary" id="obtain-new-token">New token</button>
+    </div>
+
+    <!-- Logged in script and template. -->
+    <script id="user-profile-template" type="text/x-handlebars-template">
+      <div class="main">
+        <div class="search-container">
+          <h1 class="title">Create a playlist</h1>
+          <search-bar></search-bar>
+          <div class="artist-chips"></div>
+        </div>
+        
+        <related-tracks>
+          <template id="tracks-heading">
+            <div class="related-tracks__heading">
+              <span>Title</span>
+              <span class="related-tracks__heading-album">Album</span>
+              <span class="related-tracks__heading-preview">Preview</span>
+              <span class="related-tracks__heading-add">Add</span>
+            </div>
+          </template>
+
+          <!-- RELATED TRACK TEMPLATE-->
+          <template id="track-template">
+            <div class="track">
+              <div class="track__main">
+                <slot name="track-image"></slot>
+                <slot class="track__title" name="track-title"></slot>
+                <slot class="track__artist" name="track-artist"></slot>
+              </div>
+              <slot class="track__album" name="track-album"></slot>
+              <slot class="track__time" name="track-time"></slot>
+              <button class="track__preview">
+                <svg class="track__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 17"><g id="Polygon_1" fill="#fff" data-name="Polygon 1"><path d="M15.28395 14.499995H1.71606c-.25933 0-.3885-.17361-.432-.24825-.0435-.07464-.13087-.27262-.00301-.49826l6.78394-11.97164c.12965-.22879.3474-.25349.43501-.25349.0876 0 .30536.0247.43501.25349l6.78394 11.97165c.12784.2256.04046.42358-.00304.49823-.0435.07465-.17267.24827-.43196.24827Z" transform="rotate(90 7.5 7.5)"/><path d="M8.49999 2.028345H8.5l-6.78394 11.97165h13.56788L8.49999 2.028345m.000006-1.000003c.339247 0 .678494.168998.870024.506994l6.78394 11.971649c.37776.66664-.1038 1.49301-.87002 1.49301H1.71606c-.76623 0-1.24778-.82637-.87002-1.49301l6.78394-11.97165c.191525-.337995.53077-.506993.870016-.506993Z" transform="rotate(90 7.5 7.5)"/></g></svg>
+              </button>
+              <button class="track__add">
+                <span class="track__add-line-1"></span>
+                <span class="track__add-line-2"></span>
+              </button>
+            </div>
+          </template>
+        </related-tracks>
+        
+        <div class="create-playlist-container">
+          <div class="create-playlist-container-inner">
+            <create-playlist></create-playlist>
+          </div>
+        </div>
+      </div>
+      <aside class="sidebar">
+        <h2>Your top artists</h2>
+        <recently-played></recently-played>
+        <h2>Profile</h2>
+        <div class="avatar"></div>
+        <div class="username">Username</div>
+        <span class="bg-gradient bg-gradient-sidebar"></span>
+      </aside>
+    </script>
+
+    <script id="oauth-template" type="text/x-handlebars-template"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.1/handlebars.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="main.js"></script>
+
+    <script>
+      (function() {
+        /**
+         * Obtains parameters from the hash of the URL
+         * @return Object
+         */
+        function getHashParams() {
+          var hashParams = {};
+          var e, r = /([^&;=]+)=?([^&;]*)/g,
+              q = window.location.hash.substring(1);
+          while ( e = r.exec(q)) {
+             hashParams[e[1]] = decodeURIComponent(e[2]);
+          }
+          return hashParams;
+        }
+
+        var userProfileSource = document.getElementById('user-profile-template').innerHTML,
+            userProfileTemplate = Handlebars.compile(userProfileSource),
+            userProfilePlaceholder = document.getElementById('user-profile');
+
+        var oauthSource = document.getElementById('oauth-template').innerHTML,
+            oauthTemplate = Handlebars.compile(oauthSource),
+            oauthPlaceholder = document.getElementById('oauth');
+
+        var params = getHashParams();
+
+        var access_token = params.access_token,
+            refresh_token = params.refresh_token,
+            error = params.error;
+
+        if (error) {
+          alert('There was an error during the authentication');
+        } else {
+          if (access_token) {
+            // render oauth info
+            oauthPlaceholder.innerHTML = oauthTemplate({
+              access_token: access_token,
+              refresh_token: refresh_token
+            });
+
+            $.ajax({
+                url: 'https://api.spotify.com/v1/me',
+                headers: {
+                  'Authorization': 'Bearer ' + access_token
+                },
+                success: function(response) {
+                  userProfilePlaceholder.innerHTML = userProfileTemplate(response);
+
+                  $('#login').hide();
+                  $('#loggedin').show();
+                }
+            });
+          } else {
+              // render initial screen
+              $('#login').show();
+              $('#loggedin').hide();
+          }
+
+          // New token.
+          document.getElementById('obtain-new-token').addEventListener('click', function() {
+            $.ajax({
+              url: '/refresh_token',
+              data: {
+                'refresh_token': refresh_token
+              }
+            }).done(function(data) {
+              access_token = data.access_token;
+              oauthPlaceholder.innerHTML = oauthTemplate({
+                access_token: access_token,
+                refresh_token: refresh_token
+              });
+            });
+          }, false);
+        }
+
+        // Sidebar toggle.
+        document.querySelector('.sidebar-toggle').addEventListener('click', toggleSidebar);
+      })();
+
+      function toggleSidebar() {
+        const mainEl = document.querySelector('.main-container');
+        const sidebarEl = document.querySelector('.sidebar');
+        if (this.classList.contains('open')) {
+          this.classList.remove('open');
+          mainEl.classList.remove('sidebar-open');
+          sidebarEl.classList.remove('sidebar-open');
+        } else {
+          this.classList.add('open');
+          mainEl.classList.add('sidebar-open');
+          sidebarEl.classList.add('sidebar-open');
+        }
+      }
+    </script>
+  </body>
+</html>
+

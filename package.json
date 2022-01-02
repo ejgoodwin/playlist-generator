@@ -1,0 +1,25 @@
+{
+  "author": "Spotify",
+  "name": "web-api-auth-examples",
+  "description": "Basic examples of the Spotify authorization flows through OAuth 2",
+  "version": "0.0.2",
+  "private": true,
+  "dependencies": {
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.4",
+    "dotenv": "^10.0.0",
+    "express": "~4.16.0",
+    "node-sass": "^6.0.1",
+    "querystring": "~0.2.0",
+    "request": "~2.83.0"
+  },
+  "scripts": {
+    "build-css": "node-sass -w --include-path scss src/scss/main.scss dist/main.css",
+    "watch-css": "nodemon -e scss -x \"npm run build-css\""
+  },
+  "devDependencies": {
+    "webpack": "^5.65.0",
+    "webpack-cli": "^4.9.1",
+    "webpack-glob-entry": "^2.1.1"
+  }
+}
