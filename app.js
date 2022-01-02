@@ -14,8 +14,6 @@ var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
 require('dotenv').config({path:".env"});
 
-console.log(process.env.CLIENT_ID);
-
 var client_id = process.env.CLIENT_ID; // Your client id
 var client_secret = process.env.CLIENT_SECRET; // Your secret
 var redirect_uri = 'http://localhost:8888/callback/'; // Your redirect uri
@@ -44,7 +42,6 @@ app.use(express.static(__dirname + '/dist'))
    .use(cookieParser());
 
 app.get('/login', function(req, res) {
-
   var state = generateRandomString(16);
   res.cookie(stateKey, state);
 
@@ -125,7 +122,6 @@ app.get('/callback', function(req, res) {
 
 app.get('/refresh_token', function(req, res) {
   // requesting access token from refresh token
-  console.log('node');
   var refresh_token = req.query.refresh_token;
   var authOptions = {
     url: 'https://accounts.spotify.com/api/token',
