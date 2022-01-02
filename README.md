@@ -2,7 +2,7 @@
 Create Spotify playlists by searching for an artist and selecting suggested tracks generated using Spotify web APIs. Spotify's play button is embedded to allow users to listen to the songs before adding them to the playlist.
 
 ## Designs
-![design 1](app/public/images/readme-design-main-v8.jpg)
+![design 1](dist/images/readme-design-main-v8.jpg)
 
 ## Tech
 JavaScript, web components (custom elements, shadow DOM, templates).
