@@ -61,18 +61,57 @@ class Track extends HTMLElement {
 				height: 35px;
 				justify-content: center;
 				justify-self: center;
+				position: relative;
 				width: 35px;
 			}
 			.track__add {
 				background: rgb(27,101,163);
 				background: linear-gradient(329deg, rgba(27,101,163,1) 0%, rgba(33,147,143,1) 100%);
 			}
+			.track__add::after,
+			.track__preview::after {
+				border-radius: 100px;
+				bottom: 0;
+				content: '';
+				cursor: pointer;
+				left: 0;
+				opacity: 0;
+				position: absolute;
+				right: 0;
+				top: 0;
+				transition: .2s;
+			}
+			.track__add::after {
+				background: #35b0b9;
+			}
+			.track__preview::after {
+				background: #216d9e;
+			}
+			.track__preview:hover::after {
+				opacity: .4;
+			}
+			.track__add:hover::after {
+				opacity: .4;
+			}
+			.track__add-inner,
+			.track__preview-inner {
+				align-items: center;
+				display: flex;
+				height: 100%;
+				justify-content: center;
+				width: 100%;
+				z-index: 1;
+			}
 			.track__add[selected] {
 				background: rgb(163,27,163);
 				background: linear-gradient(329deg, rgba(163,27,163,1) 0%, rgba(147,33,81,1) 100%);				
 			}
+			.track__add[selected]::after {
+				background: #a31ba3;
+				opcaity: 1;
+			}
 			.track__add[selected] .track__add-line-2 {
-				display: none;
+				transform: scaleY(0);
 			}
 			.track__add-line-1,
 			.track__add-line-2 {
@@ -81,16 +120,26 @@ class Track extends HTMLElement {
 				height: 3px;
 				opacity: 1;
 				position: absolute;
+				transition: .1s;
 				width: 15px;
 			}
 			.track__add-line-2 {
-				transform: rotate(90deg);
+				height: 15px;
+				width: 3px;
 			}
 			.track__preview {
 				background: rgb(43,70,162);
 				background: linear-gradient(329deg, rgba(43,70,162,1) 0%, rgba(22,80,117,1) 100%);
 			}
+			.track__preview:hover {
+				background: rgb(43,70,162);
+			}
+			.track__preview.playing .track__icon {
+				transform: rotate(-90deg);
+			}
 			.track__icon {
+				transform: scale(1);
+				transition: .1s;
 				width: 15px;
 			}
 			#related-tracks-list {
@@ -198,10 +247,12 @@ class Track extends HTMLElement {
         const buttonContainer = this.shadowRoot.querySelector('.embed-button-container');
         if (buttonContainer && buttonContainer.classList.contains('close-embed')) {
             buttonContainer.classList.remove('close-embed');
+			this.buttonPreview.classList.add('playing');
             return;
         }
         if (buttonContainer) {
             buttonContainer.classList.add('close-embed');
+			this.buttonPreview.classList.remove('playing');
             return;
 		} 
         const previewUrl = this.getAttribute('track-id');
@@ -212,6 +263,7 @@ class Track extends HTMLElement {
         const embedButton = `<iframe src="https://open.spotify.com/embed/track/${previewUrl}" width="100%" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`
         embedButtonContainer.innerHTML = embedButton;
         this.shadowRoot.appendChild(embedButtonContainer);
+		this.buttonPreview.classList.add('playing');
 	}
 }
 

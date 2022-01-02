@@ -13,7 +13,7 @@ button {
 	text-decoration: none;
 }
 .button-secondary {
-	background: transparent;
+	background: var(--background-1);
 	border: 2px solid var(--primary-colour);
 	color: var(--text-colour-primary);
 	cursor: pointer;
@@ -40,4 +40,5 @@ button {
 	bottom: 1rem;
 	position: fixed;
 	right: 1rem;
+	z-index: 2;
 }

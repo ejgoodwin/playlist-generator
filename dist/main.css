@@ -109,7 +109,7 @@ button {
   text-decoration: none; }
 
 .button-secondary {
-  background: transparent;
+  background: var(--background-1);
   border: 2px solid var(--primary-colour);
   color: var(--text-colour-primary);
   cursor: pointer;
@@ -135,7 +135,8 @@ button {
 #obtain-new-token {
   bottom: 1rem;
   position: fixed;
-  right: 1rem; }
+  right: 1rem;
+  z-index: 2; }
 
 .artist-chips {
   display: flex;
@@ -188,9 +189,13 @@ button {
   top: 0;
   transform: translateX(100%);
   transition: .1s;
-  width: 400px; }
+  width: 300px;
+  z-index: 2; }
   .sidebar.sidebar-open {
     transform: translateX(0); }
+  @media screen and (min-width: 600px) {
+    .sidebar {
+      width: 400px; } }
 
 .sidebar-toggle {
   background: var(--background-4);
@@ -202,7 +207,8 @@ button {
   right: 1rem;
   top: 1rem;
   transition: .1s;
-  width: 40px; }
+  width: 40px;
+  z-index: 3; }
   .sidebar-toggle:hover {
     background: #30386c; }
   .sidebar-toggle svg {

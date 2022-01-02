@@ -28,10 +28,15 @@
 	top: 0;
 	transform: translateX(100%);
 	transition: .1s;
-	width: 400px;
+	width: 300px;
+	z-index: 2;
 
 	&.sidebar-open {
 		transform: translateX(0);
+	}
+
+	@media screen and (min-width: 600px) {
+		width: 400px;
 	}
 }
 
@@ -46,6 +51,7 @@
 	top: 1rem;
 	transition: .1s;
 	width: 40px;
+	z-index: 3;
 
 	&:hover {
 		background: lighten($BACKGROUND_4, 5);

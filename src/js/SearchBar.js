@@ -38,7 +38,7 @@ class SearchBar extends HTMLElement {
 					min-width: 350px;
 					padding: .5rem;
 					position: absolute;
-					z-index: 1;
+					z-index: 2;
 				}
 				.artist-list-button {
 					background: var(--background-2);
