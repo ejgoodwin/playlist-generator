@@ -16,9 +16,3 @@ Create an account/login to Spotify developers dashboard: https://developer.spoti
 
 Spotify web API docs: https://developer.spotify.com/documentation/web-api/
 
-## To do:
-* Search bar - close when clicking outside of it
-* Avatar
-* Logout
-* Refresh token
-* Handle errors - no artists returned, no play option, can't add to playlist
