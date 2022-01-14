@@ -90,7 +90,7 @@ class SearchBar extends HTMLElement {
 
 		// Parameters from the hash of the url.
 		this.params = null;
-		this.accessTocken = null;
+		this.accessToken = null;
 
 		// Fetch options.
 		this.options = null
@@ -104,10 +104,10 @@ class SearchBar extends HTMLElement {
 
 	connectedCallback() { 
 		this.params = this.getHashParams_();
-		this.accessTocken = this.params.access_token;
+		this.accessToken = this.params.access_token;
 		this.options = {
 		  'headers': {
-		    'Authorization': `Bearer ${this.accessTocken}`
+		    'Authorization': `Bearer ${this.accessToken}`
 		  }
 		}
 

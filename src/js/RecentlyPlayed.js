@@ -56,10 +56,10 @@ class RecentlyPlayed extends HTMLElement {
 
 	connectedCallback() { 
 		const params = this.getHashParams_();
-		this.accessTocken = params.access_token;
+		this.accessToken = params.access_token;
 		this.options = {
 		  'headers': {
-		    'Authorization': `Bearer ${this.accessTocken}`
+		    'Authorization': `Bearer ${this.accessToken}`
 		  }
 		}
         this.fetchRecentlyPlayed();
