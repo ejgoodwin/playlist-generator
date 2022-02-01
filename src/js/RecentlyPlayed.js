@@ -55,9 +55,7 @@ class RecentlyPlayed extends HTMLElement {
     }
 
 	connectedCallback() { 
-		const params = this.getAccessToken();
-        console.log('p',params);
-		this.accessToken = params.access_token;
+		this.accessToken = window.localStorage.access_token;
 		this.options = {
 		  'headers': {
 		    'Authorization': `Bearer ${this.accessToken}`
@@ -65,14 +63,6 @@ class RecentlyPlayed extends HTMLElement {
 		}
         this.fetchRecentlyPlayed();
 	}
-
-    getAccessToken() {
-        // const cookieAccessToken = document.cookie;
-        const cookies = document.cookie.split(';');
-        const cookieAccessToken = cookies.find(item => item.startsWith('access_token=')).split('=')[1];
-        const cookieRefreshToken = cookies.find(item => item.trim().startsWith('refresh_token=')).split('=')[1];
-        return {'access_token': cookieAccessToken, 'refresh_token': cookieRefreshToken};
-    }
 
     fetchRecentlyPlayed() {
         fetch(this.url, this.options)

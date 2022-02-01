@@ -62,13 +62,11 @@ class ArtistChip extends HTMLElement {
 	populateChip() {
 		this.shadowRoot.querySelector('.artist-chip__name').textContent = this.getAttribute('data-artist-name');
 		this.shadowRoot.querySelector('.artist-chip__image').style.backgroundImage = `url(${this.getAttribute('data-artist-image')})`;
-		console.log('URL', this.getAttribute("data-artist-image"));
 	}
 
 	removeChip_(event) {
 		this.remove();
 		this.updateRelatedTracksAttribute_();
-
 	}
 
 	updateRelatedTracksAttribute_() {
