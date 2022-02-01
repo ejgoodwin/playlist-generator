@@ -87,13 +87,21 @@ class RelatedTracks extends HTMLElement {
 	connectedCallback() {
 		this.getArtistIds_();
 
-		this.params = this.getHashParams_();
+		this.params = this.getAccessToken();
 		this.accessToken = this.params.access_token;
 		this.options = {
 		  'headers': {
 		    'Authorization': `Bearer ${this.accessToken}`
 		  }
 		}
+	}
+
+	getAccessToken() {
+		// const cookieAccessToken = document.cookie;
+		const cookies = document.cookie.split(';');
+		const cookieAccessToken = cookies.find(item => item.startsWith('access_token=')).split('=')[1];
+		const cookieRefreshToken = cookies.find(item => item.trim().startsWith('refresh_token=')).split('=')[1];
+		return {'access_token': cookieAccessToken, 'refresh_token': cookieRefreshToken};
 	}
 
 	attributeChangedCallback(attrName, oldVal, newVal) {
@@ -114,18 +122,6 @@ class RelatedTracks extends HTMLElement {
 			trackList.id = 'related-tracks-list';
 			this.shadowRoot.appendChild(trackList);
 		}
-	}
-
-	// TODO: replace this.
-	getHashParams_() {
-		console.log('params');
-		const hashParams = {};
-		let e, r = /([^&;=]+)=?([^&;]*)/g,
-		    q = window.location.hash.substring(1);
-		while ( e = r.exec(q)) {
-		   hashParams[e[1]] = decodeURIComponent(e[2]);
-		}
-		return hashParams;
 	}
 
 	getArtistIds_() {

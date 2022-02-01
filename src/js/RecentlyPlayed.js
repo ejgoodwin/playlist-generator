@@ -55,7 +55,8 @@ class RecentlyPlayed extends HTMLElement {
     }
 
 	connectedCallback() { 
-		const params = this.getHashParams_();
+		const params = this.getAccessToken();
+        console.log('p',params);
 		this.accessToken = params.access_token;
 		this.options = {
 		  'headers': {
@@ -65,16 +66,13 @@ class RecentlyPlayed extends HTMLElement {
         this.fetchRecentlyPlayed();
 	}
 
-	// TODO: replace this.
-	getHashParams_() {
-		const hashParams = {};
-		let e, r = /([^&;=]+)=?([^&;]*)/g,
-		    q = window.location.hash.substring(1);
-		while ( e = r.exec(q)) {
-		   hashParams[e[1]] = decodeURIComponent(e[2]);
-		}
-		return hashParams;
-	}
+    getAccessToken() {
+        // const cookieAccessToken = document.cookie;
+        const cookies = document.cookie.split(';');
+        const cookieAccessToken = cookies.find(item => item.startsWith('access_token=')).split('=')[1];
+        const cookieRefreshToken = cookies.find(item => item.trim().startsWith('refresh_token=')).split('=')[1];
+        return {'access_token': cookieAccessToken, 'refresh_token': cookieRefreshToken};
+    }
 
     fetchRecentlyPlayed() {
         fetch(this.url, this.options)
