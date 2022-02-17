@@ -143,8 +143,7 @@ class CreatePlaylist extends HTMLElement {
 	}
 
 	connectedCallback() {
-		this.params = this.getHashParams_();
-		this.accessToken = this.params.access_token;
+		this.accessToken = window.localStorage.access_token;
 		this.options = {
 		  'headers': {
 		    'Authorization': `Bearer ${this.accessToken}`
@@ -202,18 +201,6 @@ class CreatePlaylist extends HTMLElement {
 		if (this.addTracksError.getAttribute('error-show')) {
 			this.addTracksError.removeAttribute('error-show');
 		}
-	}
-
-	// TODO: replace this.
-	getHashParams_() {
-		console.log('params');
-		const hashParams = {};
-		let e, r = /([^&;=]+)=?([^&;]*)/g,
-		    q = window.location.hash.substring(1);
-		while ( e = r.exec(q)) {
-		   hashParams[e[1]] = decodeURIComponent(e[2]);
-		}
-		return hashParams;
 	}
 
 	validatePlaylist_() {

@@ -55,25 +55,13 @@ class RecentlyPlayed extends HTMLElement {
     }
 
 	connectedCallback() { 
-		const params = this.getHashParams_();
-		this.accessToken = params.access_token;
+		this.accessToken = window.localStorage.access_token;
 		this.options = {
 		  'headers': {
 		    'Authorization': `Bearer ${this.accessToken}`
 		  }
 		}
         this.fetchRecentlyPlayed();
-	}
-
-	// TODO: replace this.
-	getHashParams_() {
-		const hashParams = {};
-		let e, r = /([^&;=]+)=?([^&;]*)/g,
-		    q = window.location.hash.substring(1);
-		while ( e = r.exec(q)) {
-		   hashParams[e[1]] = decodeURIComponent(e[2]);
-		}
-		return hashParams;
 	}
 
     fetchRecentlyPlayed() {
