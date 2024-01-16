@@ -97,13 +97,15 @@
         
 
         function getAccessToken() {
-          // const cookieAccessToken = document.cookie;
-          const cookies = document.cookie.split(';');
-          const cookieAccessToken = cookies.find(item => item.startsWith('access_token=')).split('=')[1];
-          const cookieRefreshToken = cookies.find(item => item.trim().startsWith('refresh_token=')).split('=')[1];
-          window.localStorage.setItem('access_token', cookieAccessToken);
-          window.localStorage.setItem('refresh_token', cookieRefreshToken);
-          // return {'access_token': cookieAccessToken, 'refresh_token': cookieRefreshToken};
+          let cookies;
+          if (document.cookie.includes(';')) {
+            cookies = document.cookie.split(';');
+            window.localStorage.setItem('access_token', cookies.find(item => item.startsWith('access_token=')).split('=')[1]);
+            window.localStorage.setItem('refresh_token', cookies.find(item => item.trim().startsWith('refresh_token=')).split('=')[1]);
+          } else {
+            window.localStorage.setItem('access_token', '');
+            window.localStorage.setItem('refresh_token', '');
+          }
         }
 
         var userProfileSource = document.getElementById('user-profile-template').innerHTML,
