@@ -1,14 +1,14 @@
 class ArtistChip extends HTMLElement {
-	constructor() {
-		super();
+  constructor() {
+    super();
 
-		// Shadow DOM.
-		const shadowRoot = this.attachShadow({mode: 'open'});
-		// let style = document.createElement('link');
-		// style.setAttribute('href', '/css/custom-element.css');
-		// // append stylesheet to Shadow DOM
-		// this.shadowRoot.append(style);
-		shadowRoot.innerHTML = `
+    // Shadow DOM.
+    const shadowRoot = this.attachShadow({ mode: "open" });
+    // let style = document.createElement('link');
+    // style.setAttribute('href', '/css/custom-element.css');
+    // // append stylesheet to Shadow DOM
+    // this.shadowRoot.append(style);
+    shadowRoot.innerHTML = `
 			<style>
 				.artist-chip {
 					background: var(--background-3);
@@ -49,30 +49,32 @@ class ArtistChip extends HTMLElement {
 			</div>
 		`;
 
-		// Add event listener for close button.
-		const closeButton = this.shadowRoot.querySelector('.artist-chip__close');
-		closeButton.addEventListener('click', (event) => this.removeChip_(event));
-	}
+    // Add event listener for close button.
+    const closeButton = this.shadowRoot.querySelector(".artist-chip__close");
+    closeButton.addEventListener("click", (event) => this.removeChip_(event));
+  }
 
-	connectedCallback() {
-		this.updateRelatedTracksAttribute_();
-		this.populateChip();
-	}
+  connectedCallback() {
+    this.updateRelatedTracksAttribute_();
+    this.populateChip();
+  }
 
-	populateChip() {
-		this.shadowRoot.querySelector('.artist-chip__name').textContent = this.getAttribute('data-artist-name');
-		this.shadowRoot.querySelector('.artist-chip__image').style.backgroundImage = `url(${this.getAttribute('data-artist-image')})`;
-	}
+  populateChip() {
+    this.shadowRoot.querySelector(".artist-chip__name").textContent =
+      this.getAttribute("data-artist-name");
+    this.shadowRoot.querySelector(".artist-chip__image").style.backgroundImage =
+      `url(${this.getAttribute("data-artist-image")})`;
+  }
 
-	removeChip_(event) {
-		this.remove();
-		this.updateRelatedTracksAttribute_();
-	}
+  removeChip_(event) {
+    this.remove();
+    this.updateRelatedTracksAttribute_();
+  }
 
-	updateRelatedTracksAttribute_() {
-		// Update the attribute on related-tracks element to trigger refresh of tracks data.
-		document.querySelector('related-tracks').setAttribute('tracks-set', true)
-	}
+  updateRelatedTracksAttribute_() {
+    // Update the attribute on related-tracks element to trigger refresh of tracks data.
+    document.querySelector("related-tracks").setAttribute("tracks-set", true);
+  }
 }
 
-window.customElements.define('artist-chip', ArtistChip);
+window.customElements.define("artist-chip", ArtistChip);

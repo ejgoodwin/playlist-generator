@@ -18,6 +18,7 @@
     "watch-css": "nodemon -e scss -x \"npm run build-css\""
   },
   "devDependencies": {
+    "prettier": "3.2.2",
     "webpack": "^5.65.0",
     "webpack-cli": "^4.9.1",
     "webpack-glob-entry": "^2.1.1"

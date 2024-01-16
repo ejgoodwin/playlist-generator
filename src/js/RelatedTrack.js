@@ -1,14 +1,14 @@
 class Track extends HTMLElement {
-    constructor() {
-        super();
+  constructor() {
+    super();
 
-        // Shadow DOM.
-        const shadowRoot = this.attachShadow({mode: 'open'});
-        // Add template to shadow DOM.
-        const template = document.getElementById('track-template');
-		const templateContent = template.content;
-		
-        shadowRoot.innerHTML = `
+    // Shadow DOM.
+    const shadowRoot = this.attachShadow({ mode: "open" });
+    // Add template to shadow DOM.
+    const template = document.getElementById("track-template");
+    const templateContent = template.content;
+
+    shadowRoot.innerHTML = `
             <style>
 			* {
 				box-sizing: border-box;
@@ -212,59 +212,63 @@ class Track extends HTMLElement {
 			}
             </style>
         `;
-        shadowRoot.appendChild(templateContent.cloneNode(true));
+    shadowRoot.appendChild(templateContent.cloneNode(true));
 
-        this.buttonAdd = null;
-        this.buttonPreview = null;
+    this.buttonAdd = null;
+    this.buttonPreview = null;
+  }
+
+  connectedCallback() {
+    // Store buttons.
+    this.buttonAdd = this.shadowRoot.querySelector(".track__add");
+    this.buttonPreview = this.shadowRoot.querySelector(".track__preview");
+    // Add event listeners to add and preview buttons.
+    this.buttonAdd.addEventListener("click", () => this.addTrack());
+    this.buttonPreview.addEventListener("click", () => this.previewTrack());
+  }
+
+  addTrack() {
+    const selected = this.getAttribute("selected");
+    if (selected) {
+      this.removeAttribute("selected");
+      this.buttonAdd.removeAttribute("selected");
+    } else {
+      this.setAttribute("selected", true);
+      this.buttonAdd.setAttribute("selected", "");
     }
 
-    connectedCallback() {
-        // Store buttons.
-        this.buttonAdd = this.shadowRoot.querySelector('.track__add');
-        this.buttonPreview = this.shadowRoot.querySelector('.track__preview');
-        // Add event listeners to add and preview buttons.
-        this.buttonAdd.addEventListener('click', () => this.addTrack());
-        this.buttonPreview.addEventListener('click', () => this.previewTrack());
+    // Set create-playlist element attribute to trigger an update.
+    document
+      .querySelector("create-playlist")
+      .setAttribute("tracks-updated", true);
+  }
+
+  previewTrack() {
+    // If the button container already exits, the class for hiding and showing the iframe must be toggled.
+    // If the button container does not exist, it must be created and the iframe appended.
+    const buttonContainer = this.shadowRoot.querySelector(
+      ".embed-button-container",
+    );
+    if (buttonContainer && buttonContainer.classList.contains("close-embed")) {
+      buttonContainer.classList.remove("close-embed");
+      this.buttonPreview.classList.add("playing");
+      return;
     }
+    if (buttonContainer) {
+      buttonContainer.classList.add("close-embed");
+      this.buttonPreview.classList.remove("playing");
+      return;
+    }
+    const previewUrl = this.getAttribute("track-id");
+    this.setAttribute("open", "");
 
-    addTrack() {
-		const selected = this.getAttribute('selected');
-		if (selected) {
-			this.removeAttribute('selected');
-            this.buttonAdd.removeAttribute('selected');
-		} else {
-			this.setAttribute('selected', true);
-            this.buttonAdd.setAttribute('selected', '');
-		}	
-
-		// Set create-playlist element attribute to trigger an update.
-		document.querySelector('create-playlist').setAttribute('tracks-updated', true);
-	}
-    
-	previewTrack() {
-        // If the button container already exits, the class for hiding and showing the iframe must be toggled.
-        // If the button container does not exist, it must be created and the iframe appended.
-        const buttonContainer = this.shadowRoot.querySelector('.embed-button-container');
-        if (buttonContainer && buttonContainer.classList.contains('close-embed')) {
-            buttonContainer.classList.remove('close-embed');
-			this.buttonPreview.classList.add('playing');
-            return;
-        }
-        if (buttonContainer) {
-            buttonContainer.classList.add('close-embed');
-			this.buttonPreview.classList.remove('playing');
-            return;
-		} 
-        const previewUrl = this.getAttribute('track-id');
-        this.setAttribute('open', '');
-
-        const embedButtonContainer = document.createElement('div');
-        embedButtonContainer.classList.add('embed-button-container');
-        const embedButton = `<iframe src="https://open.spotify.com/embed/track/${previewUrl}" width="100%" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`
-        embedButtonContainer.innerHTML = embedButton;
-        this.shadowRoot.appendChild(embedButtonContainer);
-		this.buttonPreview.classList.add('playing');
-	}
+    const embedButtonContainer = document.createElement("div");
+    embedButtonContainer.classList.add("embed-button-container");
+    const embedButton = `<iframe src="https://open.spotify.com/embed/track/${previewUrl}" width="100%" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`;
+    embedButtonContainer.innerHTML = embedButton;
+    this.shadowRoot.appendChild(embedButtonContainer);
+    this.buttonPreview.classList.add("playing");
+  }
 }
 
-window.customElements.define('related-track', Track);
+window.customElements.define("related-track", Track);

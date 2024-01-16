@@ -4,15 +4,15 @@
 */
 
 class SearchBar extends HTMLElement {
-	constructor() {
-		super();
+  constructor() {
+    super();
 
-		// Shadow DOM.
-		const shadowRoot = this.attachShadow({mode: 'open'});
-		// let template = document.getElementById('test-template');
-		// let templateContent = template.content;
-		// shadowRoot.appendChild(templateContent.cloneNode(true));
-		shadowRoot.innerHTML = `
+    // Shadow DOM.
+    const shadowRoot = this.attachShadow({ mode: "open" });
+    // let template = document.getElementById('test-template');
+    // let templateContent = template.content;
+    // shadowRoot.appendChild(templateContent.cloneNode(true));
+    shadowRoot.innerHTML = `
 			<style>
 				* {
 				  box-sizing: border-box;
@@ -82,102 +82,110 @@ class SearchBar extends HTMLElement {
 			</div>
 			`;
 
-		// Search bar input value
-		this.searchInput = this.shadowRoot.querySelector('#search-artist');
+    // Search bar input value
+    this.searchInput = this.shadowRoot.querySelector("#search-artist");
 
-		// API endpoint.
-		this.relatedArtistsUrl = '';
+    // API endpoint.
+    this.relatedArtistsUrl = "";
 
-		// Parameters from the hash of the url.
-		this.params = null;
-		this.accessToken = null;
+    // Parameters from the hash of the url.
+    this.params = null;
+    this.accessToken = null;
 
-		// Fetch options.
-		this.options = null
+    // Fetch options.
+    this.options = null;
 
-		// List of artists returned from fetch.
-		this.artistsList = null;
+    // List of artists returned from fetch.
+    this.artistsList = null;
 
-		// The container for the input and dropdown.
-		this.searchBarContainer = this.shadowRoot.querySelector('#search-bar-container');
-	}
+    // The container for the input and dropdown.
+    this.searchBarContainer = this.shadowRoot.querySelector(
+      "#search-bar-container",
+    );
+  }
 
-	connectedCallback() { 
-		this.accessToken = window.localStorage.access_token;
-		this.options = {
-		  'headers': {
-		    'Authorization': `Bearer ${this.accessToken}`
-		  }
-		}
+  connectedCallback() {
+    this.accessToken = window.localStorage.access_token;
+    this.options = {
+      headers: {
+        Authorization: `Bearer ${this.accessToken}`,
+      },
+    };
 
-		this.addEventListener('input', this.fetchSuggestedArtists_);
-	}
+    this.addEventListener("input", this.fetchSuggestedArtists_);
+  }
 
-	fetchSuggestedArtists_() {
-		// Return if there is no input value.
-		if (this.searchInput.value.length < 1) {
-			return;
-		}
-		
-		this.relatedArtistsUrl = `https://api.spotify.com/v1/search?q=${this.searchInput.value}&type=track,album,artist&limit=10`;
+  fetchSuggestedArtists_() {
+    // Return if there is no input value.
+    if (this.searchInput.value.length < 1) {
+      return;
+    }
 
-		fetch(this.relatedArtistsUrl, this.options)
-		.then(res => res.json())
-		.then(data => {
-			this.artistsList = data.artists
-			this.displayArtists_();
-		});
-	}
+    this.relatedArtistsUrl = `https://api.spotify.com/v1/search?q=${this.searchInput.value}&type=track,album,artist&limit=10`;
 
-	displayArtists_() {
-		// Return if there are no artists.
-		if (this.artistsList === null) {
-			return;
-		}
+    fetch(this.relatedArtistsUrl, this.options)
+      .then((res) => res.json())
+      .then((data) => {
+        this.artistsList = data.artists;
+        this.displayArtists_();
+      });
+  }
 
-		// Remove previous list so that an updated list can be added.
-		let artistListContainer = this.shadowRoot.querySelector('#artist-list-container');
-		if (artistListContainer) {
-			artistListContainer.remove();
-		}
+  displayArtists_() {
+    // Return if there are no artists.
+    if (this.artistsList === null) {
+      return;
+    }
 
-		// Create ul and append to shadow root.
-		artistListContainer = document.createElement('ul');
-		artistListContainer.id = 'artist-list-container';
-		this.shadowRoot.appendChild(artistListContainer);
+    // Remove previous list so that an updated list can be added.
+    let artistListContainer = this.shadowRoot.querySelector(
+      "#artist-list-container",
+    );
+    if (artistListContainer) {
+      artistListContainer.remove();
+    }
 
-		for (const artist of this.artistsList.items) {
-			const artistListItem = document.createElement('li');
-			const artistListItemButton = document.createElement('button');
-			artistListItemButton.classList.add('artist-list-button');
-			artistListItemButton.innerHTML = artist.name;
-			artistListItemButton.addEventListener('click', () => this.chooseArtist_(artist.id, artist.name, artist.images[0].url));
-			artistListItem.appendChild(artistListItemButton);
-			artistListContainer.appendChild(artistListItem);
-		}
-	}
+    // Create ul and append to shadow root.
+    artistListContainer = document.createElement("ul");
+    artistListContainer.id = "artist-list-container";
+    this.shadowRoot.appendChild(artistListContainer);
 
-	chooseArtist_(artistId, artistName, artistImage) {
-		// Find the existing chips and filter to see if artist chip already exists. If it does, return.
-		const allChips = document.querySelectorAll('[data-artist-id]');
-		const chipExists = [...allChips].filter((chip) => chip.getAttribute('data-artist-id') === artistId);
-		if (chipExists.length === 0) {
-			// TODO: add visual acknowledgement that the chip already exists.
-			// Create new artist chip.
-			const artistChip = document.createElement('artist-chip');
-			artistChip.setAttribute('data-artist-id', artistId);
-			artistChip.setAttribute('data-artist-name', artistName);
-			artistChip.setAttribute('data-artist-image', artistImage);
+    for (const artist of this.artistsList.items) {
+      const artistListItem = document.createElement("li");
+      const artistListItemButton = document.createElement("button");
+      artistListItemButton.classList.add("artist-list-button");
+      artistListItemButton.innerHTML = artist.name;
+      artistListItemButton.addEventListener("click", () =>
+        this.chooseArtist_(artist.id, artist.name, artist.images[0].url),
+      );
+      artistListItem.appendChild(artistListItemButton);
+      artistListContainer.appendChild(artistListItem);
+    }
+  }
 
-			// Append new artist chip to container.
-			const chipContainer = document.querySelector('.artist-chips');
-			chipContainer.appendChild(artistChip);
-		}
-		// Remove previous list once an artist has been selected.
-		this.shadowRoot.querySelector('#artist-list-container').remove();
-		// Reset search input.
-		this.searchInput.value = '';
-	}
+  chooseArtist_(artistId, artistName, artistImage) {
+    // Find the existing chips and filter to see if artist chip already exists. If it does, return.
+    const allChips = document.querySelectorAll("[data-artist-id]");
+    const chipExists = [...allChips].filter(
+      (chip) => chip.getAttribute("data-artist-id") === artistId,
+    );
+    if (chipExists.length === 0) {
+      // TODO: add visual acknowledgement that the chip already exists.
+      // Create new artist chip.
+      const artistChip = document.createElement("artist-chip");
+      artistChip.setAttribute("data-artist-id", artistId);
+      artistChip.setAttribute("data-artist-name", artistName);
+      artistChip.setAttribute("data-artist-image", artistImage);
+
+      // Append new artist chip to container.
+      const chipContainer = document.querySelector(".artist-chips");
+      chipContainer.appendChild(artistChip);
+    }
+    // Remove previous list once an artist has been selected.
+    this.shadowRoot.querySelector("#artist-list-container").remove();
+    // Reset search input.
+    this.searchInput.value = "";
+  }
 }
 
-window.customElements.define('search-bar', SearchBar);
+window.customElements.define("search-bar", SearchBar);

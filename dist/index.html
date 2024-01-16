@@ -1,12 +1,15 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Playlist generator</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" type="text/css" href="main.css" />
   </head>
 
   <body>
@@ -16,15 +19,55 @@
     <div class="container">
       <div id="login">
         <h1 class="login-title">Generate a Spotify playlist</h1>
-        <a href="/login" class="login-button button button-primary">Log in with Spotify</a>
+        <a href="/login" class="login-button button button-primary"
+          >Log in with Spotify</a
+        >
       </div>
       <div id="loggedin">
         <div class="main-container" id="user-profile"></div>
         <div id="oauth"></div>
         <button class="sidebar-toggle">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 21"><g id="Group_85" fill="#e0e0e0" data-name="Group 85" transform="translate(-1531 -15)"><rect id="Rectangle_132" width="15" height="3" data-name="Rectangle 132" opacity=".963" rx="1.5" transform="translate(1531 15)"/><rect id="Rectangle_133" width="28" height="3" data-name="Rectangle 133" opacity=".963" rx="1.5" transform="translate(1531 24)"/><rect id="Rectangle_134" width="22" height="3" data-name="Rectangle 134" opacity=".963" rx="1.5" transform="translate(1531 33)"/></g></svg>        </button>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 21">
+            <g
+              id="Group_85"
+              fill="#e0e0e0"
+              data-name="Group 85"
+              transform="translate(-1531 -15)"
+            >
+              <rect
+                id="Rectangle_132"
+                width="15"
+                height="3"
+                data-name="Rectangle 132"
+                opacity=".963"
+                rx="1.5"
+                transform="translate(1531 15)"
+              />
+              <rect
+                id="Rectangle_133"
+                width="28"
+                height="3"
+                data-name="Rectangle 133"
+                opacity=".963"
+                rx="1.5"
+                transform="translate(1531 24)"
+              />
+              <rect
+                id="Rectangle_134"
+                width="22"
+                height="3"
+                data-name="Rectangle 134"
+                opacity=".963"
+                rx="1.5"
+                transform="translate(1531 33)"
+              />
+            </g>
+          </svg>
+        </button>
       </div>
-      <button class="button button-secondary" id="obtain-new-token">New token</button>
+      <button class="button button-secondary" id="obtain-new-token">
+        New token
+      </button>
     </div>
 
     <!-- Logged in script and template. -->
@@ -35,7 +78,7 @@
           <search-bar></search-bar>
           <div class="artist-chips"></div>
         </div>
-        
+
         <related-tracks>
           <template id="tracks-heading">
             <div class="related-tracks__heading">
@@ -58,8 +101,18 @@
               <slot class="track__time" name="track-time"></slot>
               <button class="track__preview">
                 <span class="track__preview-inner">
-                  <svg class="track__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 17"><g id="Polygon_1" fill="#fff" data-name="Polygon 1"><path d="M15.28395 14.499995H1.71606c-.25933 0-.3885-.17361-.432-.24825-.0435-.07464-.13087-.27262-.00301-.49826l6.78394-11.97164c.12965-.22879.3474-.25349.43501-.25349.0876 0 .30536.0247.43501.25349l6.78394 11.97165c.12784.2256.04046.42358-.00304.49823-.0435.07465-.17267.24827-.43196.24827Z" transform="rotate(90 7.5 7.5)"/><path d="M8.49999 2.028345H8.5l-6.78394 11.97165h13.56788L8.49999 2.028345m.000006-1.000003c.339247 0 .678494.168998.870024.506994l6.78394 11.971649c.37776.66664-.1038 1.49301-.87002 1.49301H1.71606c-.76623 0-1.24778-.82637-.87002-1.49301l6.78394-11.97165c.191525-.337995.53077-.506993.870016-.506993Z" transform="rotate(90 7.5 7.5)"/></g></svg>
-              </span>
+                  <svg
+                    class="track__icon"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 15 17"
+                  ><g id="Polygon_1" fill="#fff" data-name="Polygon 1"><path
+                        d="M15.28395 14.499995H1.71606c-.25933 0-.3885-.17361-.432-.24825-.0435-.07464-.13087-.27262-.00301-.49826l6.78394-11.97164c.12965-.22879.3474-.25349.43501-.25349.0876 0 .30536.0247.43501.25349l6.78394 11.97165c.12784.2256.04046.42358-.00304.49823-.0435.07465-.17267.24827-.43196.24827Z"
+                        transform="rotate(90 7.5 7.5)"
+                      /><path
+                        d="M8.49999 2.028345H8.5l-6.78394 11.97165h13.56788L8.49999 2.028345m.000006-1.000003c.339247 0 .678494.168998.870024.506994l6.78394 11.971649c.37776.66664-.1038 1.49301-.87002 1.49301H1.71606c-.76623 0-1.24778-.82637-.87002-1.49301l6.78394-11.97165c.191525-.337995.53077-.506993.870016-.506993Z"
+                        transform="rotate(90 7.5 7.5)"
+                      /></g></svg>
+                </span>
               </button>
               <button class="track__add">
                 <span class="track__add-inner">
@@ -70,7 +123,7 @@
             </div>
           </template>
         </related-tracks>
-        
+
         <div class="create-playlist-container">
           <div class="create-playlist-container-inner">
             <create-playlist></create-playlist>
@@ -93,98 +146,114 @@
     <script src="main.js"></script>
 
     <script>
-      (function() {
-        
-
+      (function () {
         function getAccessToken() {
           let cookies;
-          if (document.cookie.includes(';')) {
-            cookies = document.cookie.split(';');
-            window.localStorage.setItem('access_token', cookies.find(item => item.startsWith('access_token=')).split('=')[1]);
-            window.localStorage.setItem('refresh_token', cookies.find(item => item.trim().startsWith('refresh_token=')).split('=')[1]);
+          if (document.cookie.includes(";")) {
+            cookies = document.cookie.split(";");
+            window.localStorage.setItem(
+              "access_token",
+              cookies
+                .find((item) => item.startsWith("access_token="))
+                .split("=")[1],
+            );
+            window.localStorage.setItem(
+              "refresh_token",
+              cookies
+                .find((item) => item.trim().startsWith("refresh_token="))
+                .split("=")[1],
+            );
           } else {
-            window.localStorage.setItem('access_token', '');
-            window.localStorage.setItem('refresh_token', '');
+            window.localStorage.setItem("access_token", "");
+            window.localStorage.setItem("refresh_token", "");
           }
         }
 
-        var userProfileSource = document.getElementById('user-profile-template').innerHTML,
-            userProfileTemplate = Handlebars.compile(userProfileSource),
-            userProfilePlaceholder = document.getElementById('user-profile');
+        var userProfileSource = document.getElementById(
+            "user-profile-template",
+          ).innerHTML,
+          userProfileTemplate = Handlebars.compile(userProfileSource),
+          userProfilePlaceholder = document.getElementById("user-profile");
 
-        var oauthSource = document.getElementById('oauth-template').innerHTML,
-            oauthTemplate = Handlebars.compile(oauthSource),
-            oauthPlaceholder = document.getElementById('oauth');
+        var oauthSource = document.getElementById("oauth-template").innerHTML,
+          oauthTemplate = Handlebars.compile(oauthSource),
+          oauthPlaceholder = document.getElementById("oauth");
 
         var params = getAccessToken();
 
         var access_token = window.localStorage.access_token,
-            refresh_token = window.localStorage.refresh_token,
-            error = null;
+          refresh_token = window.localStorage.refresh_token,
+          error = null;
 
         if (error) {
-          alert('There was an error during the authentication');
+          alert("There was an error during the authentication");
         } else {
           if (access_token) {
             // render oauth info
             oauthPlaceholder.innerHTML = oauthTemplate({
               access_token: access_token,
-              refresh_token: refresh_token
+              refresh_token: refresh_token,
             });
 
             $.ajax({
-                url: 'https://api.spotify.com/v1/me',
-                headers: {
-                  'Authorization': 'Bearer ' + access_token
-                },
-                success: function(response) {
-                  userProfilePlaceholder.innerHTML = userProfileTemplate(response);
+              url: "https://api.spotify.com/v1/me",
+              headers: {
+                Authorization: "Bearer " + access_token,
+              },
+              success: function (response) {
+                userProfilePlaceholder.innerHTML =
+                  userProfileTemplate(response);
 
-                  $('#login').hide();
-                  $('#loggedin').show();
-                }
+                $("#login").hide();
+                $("#loggedin").show();
+              },
             });
           } else {
-              // render initial screen
-              $('#login').show();
-              $('#loggedin').hide();
+            // render initial screen
+            $("#login").show();
+            $("#loggedin").hide();
           }
 
           // New token.
-          document.getElementById('obtain-new-token').addEventListener('click', function() {
-            $.ajax({
-              url: '/refresh_token',
-              data: {
-                'refresh_token': refresh_token
-              }
-            }).done(function(data) {
-              access_token = data.access_token;
-              oauthPlaceholder.innerHTML = oauthTemplate({
-                access_token: access_token,
-                refresh_token: refresh_token
+          document.getElementById("obtain-new-token").addEventListener(
+            "click",
+            function () {
+              $.ajax({
+                url: "/refresh_token",
+                data: {
+                  refresh_token: refresh_token,
+                },
+              }).done(function (data) {
+                access_token = data.access_token;
+                oauthPlaceholder.innerHTML = oauthTemplate({
+                  access_token: access_token,
+                  refresh_token: refresh_token,
+                });
               });
-            });
-          }, false);
+            },
+            false,
+          );
         }
 
         // Sidebar toggle.
-        document.querySelector('.sidebar-toggle').addEventListener('click', toggleSidebar);
+        document
+          .querySelector(".sidebar-toggle")
+          .addEventListener("click", toggleSidebar);
       })();
 
       function toggleSidebar() {
-        const mainEl = document.querySelector('.main-container');
-        const sidebarEl = document.querySelector('.sidebar');
-        if (this.classList.contains('open')) {
-          this.classList.remove('open');
-          mainEl.classList.remove('sidebar-open');
-          sidebarEl.classList.remove('sidebar-open');
+        const mainEl = document.querySelector(".main-container");
+        const sidebarEl = document.querySelector(".sidebar");
+        if (this.classList.contains("open")) {
+          this.classList.remove("open");
+          mainEl.classList.remove("sidebar-open");
+          sidebarEl.classList.remove("sidebar-open");
         } else {
-          this.classList.add('open');
-          mainEl.classList.add('sidebar-open');
-          sidebarEl.classList.add('sidebar-open');
+          this.classList.add("open");
+          mainEl.classList.add("sidebar-open");
+          sidebarEl.classList.add("sidebar-open");
         }
       }
     </script>
   </body>
 </html>
-

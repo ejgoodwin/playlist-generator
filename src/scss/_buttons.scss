@@ -1,44 +1,44 @@
 // Buttons.
 button {
-	font-family: var(--font-family-primary);
+  font-family: var(--font-family-primary);
 }
 .button {
-	border-radius: 5rem;
-	display: inline-block;
-	font-size: 1rem;
-	padding: .75rem 1.5rem;
-	transition: .1s;
+  border-radius: 5rem;
+  display: inline-block;
+  font-size: 1rem;
+  padding: 0.75rem 1.5rem;
+  transition: 0.1s;
 }
 .button:hover {
-	text-decoration: none;
+  text-decoration: none;
 }
 .button-secondary {
-	background: var(--background-1);
-	border: 2px solid var(--primary-colour);
-	color: var(--text-colour-primary);
-	cursor: pointer;
-	transition: .2s;
+  background: var(--background-1);
+  border: 2px solid var(--primary-colour);
+  color: var(--text-colour-primary);
+  cursor: pointer;
+  transition: 0.2s;
 }
 .button-secondary:hover {
-	background: var(--primary-colour);
+  background: var(--primary-colour);
 }
 .button-primary {
-	background: var(--primary-colour);
-	border: 1px solid var(--primary-colour);
-	color: var(--text-colour-primary);
-	text-decoration: none;
+  background: var(--primary-colour);
+  border: 1px solid var(--primary-colour);
+  color: var(--text-colour-primary);
+  text-decoration: none;
 }
 .button-primary:hover {
-	background: var(--primary-colour-darken);
+  background: var(--primary-colour-darken);
 }
 .login-button {
-	border-radius: 5rem;
-	margin: 2rem 0 0;
-	padding: 1rem 2rem;
-  }
+  border-radius: 5rem;
+  margin: 2rem 0 0;
+  padding: 1rem 2rem;
+}
 #obtain-new-token {
-	bottom: 1rem;
-	position: fixed;
-	right: 1rem;
-	z-index: 2;
+  bottom: 1rem;
+  position: fixed;
+  right: 1rem;
+  z-index: 2;
 }

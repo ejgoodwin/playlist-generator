@@ -1,10 +1,10 @@
 class CreatePlaylist extends HTMLElement {
-	constructor() {
-		super();
+  constructor() {
+    super();
 
-		// Shadow DOM.
-		const shadowRoot = this.attachShadow({mode: 'open'});
-		shadowRoot.innerHTML = `
+    // Shadow DOM.
+    const shadowRoot = this.attachShadow({ mode: "open" });
+    shadowRoot.innerHTML = `
 			<style>
 				* {
 					box-sizing: border-box;
@@ -126,199 +126,221 @@ class CreatePlaylist extends HTMLElement {
 			<button id="create-playlist-button" class="create-playlist-button"><span class="create-playlist-button-inner">Create playlist</span></button>
 		`;
 
-		this.relatedTracksEl = document.querySelector('related-tracks');
-		this.trackListContainer = this.shadowRoot.querySelector('.added-tracks-container');
-		this.createButton = this.shadowRoot.querySelector('#create-playlist-button');
-		this.playlistNameInput = this.shadowRoot.querySelector('#playlist-name-input');
-		this.createButton.addEventListener('click', () => this.validatePlaylist_());
-		this.addTracksError = this.shadowRoot.querySelector('.add-tracks-error');
+    this.relatedTracksEl = document.querySelector("related-tracks");
+    this.trackListContainer = this.shadowRoot.querySelector(
+      ".added-tracks-container",
+    );
+    this.createButton = this.shadowRoot.querySelector(
+      "#create-playlist-button",
+    );
+    this.playlistNameInput = this.shadowRoot.querySelector(
+      "#playlist-name-input",
+    );
+    this.createButton.addEventListener("click", () => this.validatePlaylist_());
+    this.addTracksError = this.shadowRoot.querySelector(".add-tracks-error");
 
-		this.params = null;
-		this.accessToken = null;
-		this.options = null;
-	}
+    this.params = null;
+    this.accessToken = null;
+    this.options = null;
+  }
 
-	static get observedAttributes() {
-	  return ['tracks-updated'];
-	}
+  static get observedAttributes() {
+    return ["tracks-updated"];
+  }
 
-	connectedCallback() {
-		this.accessToken = window.localStorage.access_token;
-		this.options = {
-		  'headers': {
-		    'Authorization': `Bearer ${this.accessToken}`
-		  }
-		}
+  connectedCallback() {
+    this.accessToken = window.localStorage.access_token;
+    this.options = {
+      headers: {
+        Authorization: `Bearer ${this.accessToken}`,
+      },
+    };
 
-		this.playlistNameInput.addEventListener('keypress', () => this.inputChange_())
-	}
+    this.playlistNameInput.addEventListener("keypress", () =>
+      this.inputChange_(),
+    );
+  }
 
-	attributeChangedCallback(attrName, oldVal, newVal) {
-		const selectedTracks = this.relatedTracksEl.shadowRoot.querySelectorAll('related-track[selected]');
-		console.log('selectedTracks', selectedTracks);
-		let trackList = this.shadowRoot.querySelector('.added-tracks');
+  attributeChangedCallback(attrName, oldVal, newVal) {
+    const selectedTracks = this.relatedTracksEl.shadowRoot.querySelectorAll(
+      "related-track[selected]",
+    );
+    console.log("selectedTracks", selectedTracks);
+    let trackList = this.shadowRoot.querySelector(".added-tracks");
 
-		if (trackList) {
-			trackList.remove();
-		}
+    if (trackList) {
+      trackList.remove();
+    }
 
-		trackList = document.createElement('ul');
-		trackList.classList.add('added-tracks');
-		this.trackListContainer.appendChild(trackList);
+    trackList = document.createElement("ul");
+    trackList.classList.add("added-tracks");
+    this.trackListContainer.appendChild(trackList);
 
-		for (const track of selectedTracks) {
-			// List item.
-			const newTrack = document.createElement('li');
-			newTrack.setAttribute('added-track-uri', track.getAttribute('track-uri'));
-			newTrack.classList.add('added-track');
-			
-			// Image.
-			const trackImage = document.createElement('img');
-			trackImage.src = track.querySelector('[slot="track-image"]').src;
-			trackImage.classList.add('added-track__image');
-			newTrack.appendChild(trackImage);
+    for (const track of selectedTracks) {
+      // List item.
+      const newTrack = document.createElement("li");
+      newTrack.setAttribute("added-track-uri", track.getAttribute("track-uri"));
+      newTrack.classList.add("added-track");
 
-			// Track title.
-			const trackTitle = document.createElement('span');
-			trackTitle.textContent = track.querySelector('[slot="track-title"]').textContent;
-			newTrack.appendChild(trackTitle);
+      // Image.
+      const trackImage = document.createElement("img");
+      trackImage.src = track.querySelector('[slot="track-image"]').src;
+      trackImage.classList.add("added-track__image");
+      newTrack.appendChild(trackImage);
 
-			// Artist.
-			const trackArtist = document.createElement('span');
-			trackArtist.textContent = track.querySelector('[slot="track-artist"]').textContent;
-			trackArtist.classList.add('added-track__artist');
-			newTrack.appendChild(trackArtist);
+      // Track title.
+      const trackTitle = document.createElement("span");
+      trackTitle.textContent = track.querySelector(
+        '[slot="track-title"]',
+      ).textContent;
+      newTrack.appendChild(trackTitle);
 
-			const newTrackRemoveButton = document.createElement('button');
-			newTrackRemoveButton.innerHTML = '';
-			newTrackRemoveButton.classList.add('remove-track');
-			newTrackRemoveButton.addEventListener('click', (event) => this.removeTrack_(event));
-			newTrack.appendChild(newTrackRemoveButton);
-			
-			trackList.appendChild(newTrack);
-		}
+      // Artist.
+      const trackArtist = document.createElement("span");
+      trackArtist.textContent = track.querySelector(
+        '[slot="track-artist"]',
+      ).textContent;
+      trackArtist.classList.add("added-track__artist");
+      newTrack.appendChild(trackArtist);
 
-		if (this.addTracksError.getAttribute('error-show')) {
-			this.addTracksError.removeAttribute('error-show');
-		}
-	}
+      const newTrackRemoveButton = document.createElement("button");
+      newTrackRemoveButton.innerHTML = "";
+      newTrackRemoveButton.classList.add("remove-track");
+      newTrackRemoveButton.addEventListener("click", (event) =>
+        this.removeTrack_(event),
+      );
+      newTrack.appendChild(newTrackRemoveButton);
 
-	validatePlaylist_() {
-		const addedTracks = this.shadowRoot.querySelectorAll('.added-track');
-		let playlistError = false;
-		// TODO: add validation popups for the inputs.
-		if (this.playlistNameInput.value.length < 1) {
-			this.playlistNameInput.setAttribute('input-error', true);
-			playlistError = true
-		} else {
-			this.playlistNameInput.removeAttribute('input-error');
-		}
-		if (addedTracks.length < 1) {
-			this.addTracksError.setAttribute('error-show', true);
-			playlistError = true
-		} else {
-			this.addTracksError.removeAttribute('error-show');
-		}
+      trackList.appendChild(newTrack);
+    }
 
-		if (playlistError) {
-			return;
-		}
-		/*
+    if (this.addTracksError.getAttribute("error-show")) {
+      this.addTracksError.removeAttribute("error-show");
+    }
+  }
+
+  validatePlaylist_() {
+    const addedTracks = this.shadowRoot.querySelectorAll(".added-track");
+    let playlistError = false;
+    // TODO: add validation popups for the inputs.
+    if (this.playlistNameInput.value.length < 1) {
+      this.playlistNameInput.setAttribute("input-error", true);
+      playlistError = true;
+    } else {
+      this.playlistNameInput.removeAttribute("input-error");
+    }
+    if (addedTracks.length < 1) {
+      this.addTracksError.setAttribute("error-show", true);
+      playlistError = true;
+    } else {
+      this.addTracksError.removeAttribute("error-show");
+    }
+
+    if (playlistError) {
+      return;
+    }
+    /*
 			TODO:
 			- Create playlist.
 			- Add songs to playlist.
 			- (https://developer.spotify.com/documentation/web-api/reference/#category-playlists)
 		*/
 
-		// Create playlist.
-		// Get current user's profile.
-		const userUrl = `https://api.spotify.com/v1/me`;
-		const userOptions = {
-		  'headers': {
-		    'Authorization': `Bearer ${this.accessToken}`
-		  }
-		}
-		fetch(userUrl, userOptions)
-		.then(res => res.json())
-		.then(data => {
-			console.log(data.id);
-			this.createPlaylist_(data.id);
-		})
-	}
+    // Create playlist.
+    // Get current user's profile.
+    const userUrl = `https://api.spotify.com/v1/me`;
+    const userOptions = {
+      headers: {
+        Authorization: `Bearer ${this.accessToken}`,
+      },
+    };
+    fetch(userUrl, userOptions)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data.id);
+        this.createPlaylist_(data.id);
+      });
+  }
 
-	inputChange_() {
-		if (this.playlistNameInput.getAttribute('input-error')) {
-			this.playlistNameInput.removeAttribute('input-error');
-		}	
-	}
+  inputChange_() {
+    if (this.playlistNameInput.getAttribute("input-error")) {
+      this.playlistNameInput.removeAttribute("input-error");
+    }
+  }
 
-	createPlaylist_(userId) {
-		const url = `https://api.spotify.com/v1/users/${userId}/playlists`;
-		const data =  {
-			'name': this.playlistNameInput.value,
-			'description': 'description',
-			'public': false
-		}
+  createPlaylist_(userId) {
+    const url = `https://api.spotify.com/v1/users/${userId}/playlists`;
+    const data = {
+      name: this.playlistNameInput.value,
+      description: "description",
+      public: false,
+    };
 
-		this.options['method'] = 'POST';
-		this.options['body'] = JSON.stringify(data);
+    this.options["method"] = "POST";
+    this.options["body"] = JSON.stringify(data);
 
-		fetch(url, this.options)
-		.then(res => res.json())
-		.then(data => {
-			this.addTracks_(data.id);
-		})
-		.catch((error) => {
-			console.log(error)
-		})
-	}
+    fetch(url, this.options)
+      .then((res) => res.json())
+      .then((data) => {
+        this.addTracks_(data.id);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
-	addTracks_(playlistId) {
-		// Create JSON object of track uris.
-		const trackUris = {
-			"uris": []
-		};
-		const url = `https://api.spotify.com/v1/playlists/${playlistId}/tracks`;
-		const addedTracks = this.shadowRoot.querySelectorAll('.added-track');
-		const trackList = this.shadowRoot.querySelector('.added-tracks');
+  addTracks_(playlistId) {
+    // Create JSON object of track uris.
+    const trackUris = {
+      uris: [],
+    };
+    const url = `https://api.spotify.com/v1/playlists/${playlistId}/tracks`;
+    const addedTracks = this.shadowRoot.querySelectorAll(".added-track");
+    const trackList = this.shadowRoot.querySelector(".added-tracks");
 
-		addedTracks.forEach((track) => {
-			const uri = track.getAttribute('added-track-uri');
-			trackUris["uris"].push(uri);
-		});
+    addedTracks.forEach((track) => {
+      const uri = track.getAttribute("added-track-uri");
+      trackUris["uris"].push(uri);
+    });
 
-		this.options['body'] = JSON.stringify(trackUris);
+    this.options["body"] = JSON.stringify(trackUris);
 
-		fetch(url, this.options)
-		.then(res => {
-			// TODO: toast for ack - success or failure.
-			console.log(res);
-			trackList.remove();
-			this.resetRelatedTracks_();
-			this.playlistNameInput.value = '';
-		});
-	}
+    fetch(url, this.options).then((res) => {
+      // TODO: toast for ack - success or failure.
+      console.log(res);
+      trackList.remove();
+      this.resetRelatedTracks_();
+      this.playlistNameInput.value = "";
+    });
+  }
 
-	removeTrack_(event) {
-		const item = event.target.closest('li');
-		const uriAttr = item.getAttribute('added-track-uri');
-		const relatedTracksSelectedItem = this.relatedTracksEl.shadowRoot.querySelector(`related-track[track-uri="${uriAttr}"]`);
-		
-		if (relatedTracksSelectedItem) {
-			relatedTracksSelectedItem.removeAttribute('selected');
-			relatedTracksSelectedItem.shadowRoot.querySelector('.track__add').removeAttribute('selected');
-		}
-		
-		item.remove();
-	}
+  removeTrack_(event) {
+    const item = event.target.closest("li");
+    const uriAttr = item.getAttribute("added-track-uri");
+    const relatedTracksSelectedItem =
+      this.relatedTracksEl.shadowRoot.querySelector(
+        `related-track[track-uri="${uriAttr}"]`,
+      );
 
-	resetRelatedTracks_() {
-		const selectedTracks = this.relatedTracksEl.shadowRoot.querySelectorAll(`related-track[selected]`);
-		selectedTracks.forEach((track) => {
-			track.removeAttribute('selected');
-			track.shadowRoot.querySelector('.track__add').removeAttribute('selected');
-		})
-	}
+    if (relatedTracksSelectedItem) {
+      relatedTracksSelectedItem.removeAttribute("selected");
+      relatedTracksSelectedItem.shadowRoot
+        .querySelector(".track__add")
+        .removeAttribute("selected");
+    }
+
+    item.remove();
+  }
+
+  resetRelatedTracks_() {
+    const selectedTracks = this.relatedTracksEl.shadowRoot.querySelectorAll(
+      `related-track[selected]`,
+    );
+    selectedTracks.forEach((track) => {
+      track.removeAttribute("selected");
+      track.shadowRoot.querySelector(".track__add").removeAttribute("selected");
+    });
+  }
 }
 
-window.customElements.define('create-playlist', CreatePlaylist);
+window.customElements.define("create-playlist", CreatePlaylist);
