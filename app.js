@@ -173,12 +173,24 @@ app.get('/refresh_token', function(req, res) {
 app.get('/api/search', function(req, res) {
   getClientToken(function(err, token) {
     if (err) return res.status(500).json({ error: 'Failed to get token' });
-    // https://api.spotify.com/v1
     var url = 'https://api.spotify.com/v1/search?' + querystring.stringify({
       q: req.query.q,
-      type: 'track,album,artist',
-      limit: 10
+      type: req.query.type || 'track,album,artist',
+      limit: req.query.limit || 10
     });
+    request.get({ url: url, headers: { 'Authorization': 'Bearer ' + token }, json: true },
+      function(error, response, body) {
+        if (error) return res.status(500).json({ error: 'API request failed' });
+        res.json(body);
+      }
+    );
+  });
+});
+
+app.get('/api/playlists/:id/tracks', function(req, res) {
+  getClientToken(function(err, token) {
+    if (err) return res.status(500).json({ error: 'Failed to get token' });
+    var url = 'https://api.spotify.com/v1/playlists/' + req.params.id + '/tracks?limit=50';
     request.get({ url: url, headers: { 'Authorization': 'Bearer ' + token }, json: true },
       function(error, response, body) {
         if (error) return res.status(500).json({ error: 'API request failed' });

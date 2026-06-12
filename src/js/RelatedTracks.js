@@ -98,54 +98,89 @@ class RelatedTracks extends HTMLElement {
 
 	getArtistIds_() {
 		this.artistIds = [];
+		this.artistNames = [];
 
 		const artistChips = document.querySelectorAll('artist-chip');
-		for (const artist of artistChips) {
-			this.artistIds.push(artist.getAttribute('data-artist-id'));
+		for (const chip of artistChips) {
+			this.artistIds.push(chip.getAttribute('data-artist-id'));
+			this.artistNames.push(chip.getAttribute('data-artist-name'));
 		}
-		this.getTopTracks_();
+		this.getDiscoveryTracks_();
 	}
 
-	getTopTracks_() {
+	getDiscoveryTracks_() {
 		if (this.artistIds.length === 0) return;
 
-		Promise.all(
-			this.artistIds.map(id =>
-				fetch(`/api/artists/${id}/top-tracks`)
-				.then(res => res.json())
-				.then(data => {
-					data.tracks.forEach(track => this.displayTracks_(track));
-				})
-			)
-		);
+		this.artistNames.forEach(name => {
+			// Search for mix playlists — these contain multiple artists unlike artist-only playlists
+			fetch(`/api/search?q=${encodeURIComponent(name + ' mix')}&type=playlist&limit=5`)
+			.then(res => res.json())
+			.then(data => {
+				const playlists = (data.playlists?.items || []).filter(p => p !== null);
+				if (playlists.length === 0) return Promise.resolve([]);
+
+				// Fetch first 3 playlists in parallel for more track variety
+				return Promise.all(
+					playlists.slice(0, 3).map(playlist =>
+						fetch(`/api/playlists/${playlist.id}/tracks?limit=50`)
+						.then(res => res.json())
+						.then(data => data?.items || [])
+						.catch(() => [])
+					)
+				);
+			})
+			.then(allItems => {
+				if (!allItems?.length) return;
+
+				const seen = new Set();
+				const eligible = allItems.flat()
+					.filter(item =>
+						item.track?.id &&
+						item.track.artists?.length > 0 &&
+						item.track.album?.images?.length > 0 &&
+						!this.artistIds.some(id => item.track.artists.some(a => a.id === id))
+					)
+					.map(item => item.track)
+					.filter(track => {
+						if (seen.has(track.id)) return false;
+						seen.add(track.id);
+						return true;
+					})
+					.sort(() => Math.random() - 0.5)
+					.slice(0, 10);
+
+				eligible.forEach(track => this.displayTracks_(track));
+			})
+			.catch(err => console.error('Discovery tracks error:', err));
+		});
 	}
 
 	displayTracks_(track) {
-		// Calculate track time.
 		const minutes = Math.floor(track.duration_ms / 60000);
 		const seconds = ((track.duration_ms % 60000) / 1000).toFixed(0);
 		const duration = `${minutes}:${(seconds < 10 ? '0' : '') + seconds}`;
-		// Create new <related-track> element.
+
 		const trackElement = document.createElement('related-track');
 		trackElement.setAttribute('track-id', track.id);
 		trackElement.setAttribute('track-uri', track.uri);
-		// Add slot info.
 		trackElement.insertAdjacentHTML('beforeEnd', `<span slot="track-title">${track.name}</span>`);
 		trackElement.insertAdjacentHTML('beforeEnd', `<span slot="track-artist">${track.artists[0].name}</span>`);
 		trackElement.insertAdjacentHTML('beforeEnd', `<span slot="track-album">${track.album.name}</span>`);
 		trackElement.insertAdjacentHTML('beforeEnd', `<span slot="track-time">${duration}</span>`);
-		trackElement.insertAdjacentHTML('beforeEnd', `<img slot="track-image" alt="" class="track__image" src=${track.album.images[0].url}>`);
+		trackElement.insertAdjacentHTML('beforeEnd', `<img slot="track-image" alt="" class="track__image" src="${track.album.images[0].url}">`);
 
-		const trackList = this.shadowRoot.querySelector('#related-tracks-list');
+		let trackList = this.shadowRoot.querySelector('#related-tracks-list');
+		if (!trackList) {
+			trackList = document.createElement('div');
+			trackList.id = 'related-tracks-list';
+			this.shadowRoot.appendChild(trackList);
+		}
+
 		const trackListItems = this.shadowRoot.querySelectorAll('related-track');
-		// Random number used to add new track in list.
-		let randomTrackInsert =  Math.floor(Math.random() * trackListItems.length);
-		// Add the tracks in random order to mix multiple artists.
+		let randomTrackInsert = Math.floor(Math.random() * trackListItems.length);
 		if (trackListItems.length > 1) {
-			// Insert new items before the selected tracks so that selected tracks are placed at the bottom of the list.
-			while (trackListItems[randomTrackInsert].hasAttribute('selected') &&
-				randomTrackInsert != 0) {
-					randomTrackInsert--;
+			while (trackListItems[randomTrackInsert].hasAttribute('selected') && randomTrackInsert !== 0) {
+				randomTrackInsert--;
 			}
 			trackList.insertBefore(trackElement, trackListItems[randomTrackInsert]);
 		} else {
