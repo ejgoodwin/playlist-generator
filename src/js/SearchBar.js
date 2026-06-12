@@ -98,11 +98,14 @@ class SearchBar extends HTMLElement {
   }
 
   connectedCallback() {
-    this.addEventListener('input', this.fetchSuggestedArtists_);
+    let debounceTimer;
+    this.addEventListener('input', () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => this.fetchSuggestedArtists_(), 300);
+    });
   }
 
   fetchSuggestedArtists_() {
-    // Return if there is no input value.
     if (this.searchInput.value.length < 1) {
       return;
     }
