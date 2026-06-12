@@ -54,9 +54,12 @@ class RecentlyPlayed extends HTMLElement {
         this.artistContainer = this.shadowRoot.querySelector('.artist-container');
     }
 
-	connectedCallback() { 
+	connectedCallback() {
 		const params = this.getHashParams_();
 		this.accessToken = params.access_token;
+		if (!this.accessToken) {
+			return;
+		}
 		this.options = {
 		  'headers': {
 		    'Authorization': `Bearer ${this.accessToken}`

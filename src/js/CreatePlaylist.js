@@ -151,6 +151,10 @@ class CreatePlaylist extends HTMLElement {
 		  }
 		}
 
+		if (!this.accessToken) {
+			this.createButton.querySelector('.create-playlist-button-inner').textContent = 'Log in to save playlist';
+		}
+
 		this.playlistNameInput.addEventListener('keypress', () => this.inputChange_())
 	}
 
@@ -217,6 +221,11 @@ class CreatePlaylist extends HTMLElement {
 	}
 
 	validatePlaylist_() {
+		if (!this.accessToken) {
+			window.location.href = '/login';
+			return;
+		}
+
 		const addedTracks = this.shadowRoot.querySelectorAll('.added-track');
 		let playlistError = false;
 		// TODO: add validation popups for the inputs.

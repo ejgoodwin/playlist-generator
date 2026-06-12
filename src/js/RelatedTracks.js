@@ -66,18 +66,6 @@ class RelatedTracks extends HTMLElement {
 		const tickSVG = '<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="svg-inline--fa fa-check-circle fa-w-16" data-icon="check-circle" data-prefix="far" viewBox="0 0 512 512"><path fill="currentColor" d="M256 8C119.033 8 8 119.033 8 256s111.033 248 248 248 248-111.033 248-248S392.967 8 256 8zm0 48c110.532 0 200 89.451 200 200 0 110.532-89.451 200-200 200-110.532 0-200-89.451-200-200 0-110.532 89.451-200 200-200m140.204 130.267-22.536-22.718c-4.667-4.705-12.265-4.736-16.97-.068L215.346 303.697l-59.792-60.277c-4.667-4.705-12.265-4.736-16.97-.069l-22.719 22.536c-4.705 4.667-4.736 12.265-.068 16.971l90.781 91.516c4.667 4.705 12.265 4.736 16.97.068l172.589-171.204c4.704-4.668 4.734-12.266.067-16.971z"/></svg>'
 
 		this.artistIds = [];
-
-		// Parameters from the hash of the url.
-		this.params = null;
-		this.accessToken = null;
-
-		// Fetch options.
-		this.options = null
-
-		this.relatedArtists = [];
-		this.relatedArtistsIds = [];
-		this.relatedTracksList = [];
-		this.chosenTracks = [];
 	}
 
 	static get observedAttributes() {
@@ -86,14 +74,6 @@ class RelatedTracks extends HTMLElement {
 
 	connectedCallback() {
 		this.getArtistIds_();
-
-		this.params = this.getHashParams_();
-		this.accessToken = this.params.access_token;
-		this.options = {
-		  'headers': {
-		    'Authorization': `Bearer ${this.accessToken}`
-		  }
-		}
 	}
 
 	attributeChangedCallback(attrName, oldVal, newVal) {
@@ -116,82 +96,28 @@ class RelatedTracks extends HTMLElement {
 		}
 	}
 
-	// TODO: replace this.
-	getHashParams_() {
-		console.log('params');
-		const hashParams = {};
-		let e, r = /([^&;=]+)=?([^&;]*)/g,
-		    q = window.location.hash.substring(1);
-		while ( e = r.exec(q)) {
-		   hashParams[e[1]] = decodeURIComponent(e[2]);
-		}
-		return hashParams;
-	}
-
 	getArtistIds_() {
-		// Reset artists ID list.
 		this.artistIds = [];
 
-		// Get all artist chips and store their artist IDs.
 		const artistChips = document.querySelectorAll('artist-chip');
-		
-		for(const artist of artistChips) {
-			const artistId = artist.getAttribute('data-artist-id');
-			this.artistIds.push(artistId);
+		for (const artist of artistChips) {
+			this.artistIds.push(artist.getAttribute('data-artist-id'));
 		}
-		this.getRelatedArtists_();
+		this.getTopTracks_();
 	}
 
-	getRelatedArtists_() {
-		const artistUrls = [];
-		this.relatedArtists = [];
-
-		for (const id of this.artistIds) {
-			artistUrls.push(`https://api.spotify.com/v1/artists/${id}/related-artists`);
-		}
+	getTopTracks_() {
+		if (this.artistIds.length === 0) return;
 
 		Promise.all(
-			artistUrls.map(url => {
-				fetch(url, this.options)
+			this.artistIds.map(id =>
+				fetch(`/api/artists/${id}/top-tracks`)
 				.then(res => res.json())
 				.then(data => {
-					this.extractIds_(data);
-					this.getRelatedTracks_();
+					data.tracks.forEach(track => this.displayTracks_(track));
 				})
-			})
-		)
-	}
-
-	extractIds_(data) {
-		this.relatedArtistsIds = [];
-		for (const artist of data.artists) {
-			this.relatedArtistsIds.push(artist.id);
-		}
-	}
-
-	getRelatedTracks_() {
-		let trackUrls = [];
-
-		// Limit number of tracks based on the amount on artists (artist chips) being used.
-		const limit = Math.floor(this.relatedArtistsIds.length / this.artistIds.length);
-		this.relatedArtistsIds.forEach((id, counter) => {
-			if (counter > limit) {
-				return;
-			}
-			trackUrls.push(`https://api.spotify.com/v1/artists/${id}/top-tracks?market=from_token`);
-		});
-
-		Promise.all(
-			trackUrls.map(url => {
-				fetch(url, this.options)
-				.then(res => res.json())
-				.then(tracks => {
-					const randomNumber = Math.floor(Math.random() * tracks.tracks.length);
-					const randomTrack = tracks.tracks[randomNumber];
-					this.displayTracks_(randomTrack);
-				})
-			})
-		)
+			)
+		);
 	}
 
 	displayTracks_(track) {

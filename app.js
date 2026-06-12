@@ -18,6 +18,33 @@ var client_id = process.env.CLIENT_ID; // Your client id
 var client_secret = process.env.CLIENT_SECRET; // Your secret
 var redirect_uri = 'http://localhost:8888/callback/'; // Your redirect uri
 
+// Client credentials token cache for unauthenticated Spotify API proxy
+var clientAccessToken = null;
+var clientTokenExpiry = 0;
+
+function getClientToken(callback) {
+  if (clientAccessToken && Date.now() < clientTokenExpiry) {
+    return callback(null, clientAccessToken);
+  }
+  var authOptions = {
+    url: 'https://accounts.spotify.com/api/token',
+    form: { grant_type: 'client_credentials' },
+    headers: {
+      'Authorization': 'Basic ' + Buffer.from(client_id + ':' + client_secret).toString('base64')
+    },
+    json: true
+  };
+  request.post(authOptions, function(error, response, body) {
+    if (!error && response.statusCode === 200) {
+      clientAccessToken = body.access_token;
+      clientTokenExpiry = Date.now() + (body.expires_in - 60) * 1000;
+      callback(null, clientAccessToken);
+    } else {
+      callback(error || new Error('Failed to get client credentials token'));
+    }
+  });
+}
+
 /**
  * Generates a random string containing numbers and letters
  * @param  {number} length The length of the string
@@ -82,7 +109,7 @@ app.get('/callback', function(req, res) {
         grant_type: 'authorization_code'
       },
       headers: {
-        'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64'))
+        'Authorization': 'Basic ' + Buffer.from(client_id + ':' + client_secret).toString('base64')
       },
       json: true
     };
@@ -125,7 +152,7 @@ app.get('/refresh_token', function(req, res) {
   var refresh_token = req.query.refresh_token;
   var authOptions = {
     url: 'https://accounts.spotify.com/api/token',
-    headers: { 'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64')) },
+    headers: { 'Authorization': 'Basic ' + Buffer.from(client_id + ':' + client_secret).toString('base64') },
     form: {
       grant_type: 'refresh_token',
       refresh_token: refresh_token
@@ -140,6 +167,37 @@ app.get('/refresh_token', function(req, res) {
         'access_token': access_token
       });
     }
+  });
+});
+
+app.get('/api/search', function(req, res) {
+  getClientToken(function(err, token) {
+    if (err) return res.status(500).json({ error: 'Failed to get token' });
+    // https://api.spotify.com/v1
+    var url = 'https://api.spotify.com/v1/search?' + querystring.stringify({
+      q: req.query.q,
+      type: 'track,album,artist',
+      limit: 10
+    });
+    request.get({ url: url, headers: { 'Authorization': 'Bearer ' + token }, json: true },
+      function(error, response, body) {
+        if (error) return res.status(500).json({ error: 'API request failed' });
+        res.json(body);
+      }
+    );
+  });
+});
+
+app.get('/api/artists/:id/top-tracks', function(req, res) {
+  getClientToken(function(err, token) {
+    if (err) return res.status(500).json({ error: 'Failed to get token' });
+    var url = 'https://api.spotify.com/v1/artists/' + req.params.id + '/top-tracks?market=US';
+    request.get({ url: url, headers: { 'Authorization': 'Bearer ' + token }, json: true },
+      function(error, response, body) {
+        if (error) return res.status(500).json({ error: 'API request failed' });
+        res.json(body);
+      }
+    );
   });
 });
 
