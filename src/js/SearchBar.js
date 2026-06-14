@@ -45,14 +45,18 @@ class SearchBar extends HTMLElement {
 					border: 0;
 					border-radius: 0;
 					color: var(--text-colour-primary);
+					cursor: pointer;
 					font-size: 16px;
 					padding: .5rem 1rem;
 					text-align: left;
 					width: 100%;
 				}
+				.artist-list-button:disabled {
+					background: var(--background-1);
+					cursor: default;
+				}
 				.artist-list-button:hover {
 					background: var(--background-3);
-					cursor: pointer;
 				}
 				::-webkit-input-placeholder { /* Chrome/Opera/Safari */
 				  color: var(--input-placeholder-colour);
@@ -139,14 +143,24 @@ class SearchBar extends HTMLElement {
     artistListContainer.id = 'artist-list-container';
     this.shadowRoot.appendChild(artistListContainer);
 
+    const allChips = document.querySelectorAll('[data-artist-id]');
+    const chipIds = [...allChips].map((chip) =>
+      chip.getAttribute('data-artist-id'),
+    );
+
     for (const artist of this.artistsList.items) {
       const artistListItem = document.createElement('li');
       const artistListItemButton = document.createElement('button');
       artistListItemButton.classList.add('artist-list-button');
       artistListItemButton.innerHTML = artist.name;
-      artistListItemButton.addEventListener('click', () =>
-        this.chooseArtist_(artist.id, artist.name, artist.images[0].url),
-      );
+      if (chipIds.includes(artist.id)) {
+        artistListItemButton.disabled = true;
+        artistListItemButton.innerHTML += ' (added)';
+      } else {
+        artistListItemButton.addEventListener('click', () =>
+          this.chooseArtist_(artist.id, artist.name, artist.images[0].url),
+        );
+      }
       artistListItem.appendChild(artistListItemButton);
       artistListContainer.appendChild(artistListItem);
     }
@@ -154,22 +168,15 @@ class SearchBar extends HTMLElement {
 
   chooseArtist_(artistId, artistName, artistImage) {
     // Find the existing chips and filter to see if artist chip already exists. If it does, return.
-    const allChips = document.querySelectorAll('[data-artist-id]');
-    const chipExists = [...allChips].filter(
-      (chip) => chip.getAttribute('data-artist-id') === artistId,
-    );
-    if (chipExists.length === 0) {
-      // TODO: add visual acknowledgement that the chip already exists.
-      // Create new artist chip.
-      const artistChip = document.createElement('artist-chip');
-      artistChip.setAttribute('data-artist-id', artistId);
-      artistChip.setAttribute('data-artist-name', artistName);
-      artistChip.setAttribute('data-artist-image', artistImage);
+    const artistChip = document.createElement('artist-chip');
+    artistChip.setAttribute('data-artist-id', artistId);
+    artistChip.setAttribute('data-artist-name', artistName);
+    artistChip.setAttribute('data-artist-image', artistImage);
 
-      // Append new artist chip to container.
-      const chipContainer = document.querySelector('.artist-chips');
-      chipContainer.appendChild(artistChip);
-    }
+    // Append new artist chip to container.
+    const chipContainer = document.querySelector('.artist-chips');
+    chipContainer.appendChild(artistChip);
+
     // Remove previous list once an artist has been selected.
     this.shadowRoot.querySelector('#artist-list-container').remove();
     // Reset search input.
