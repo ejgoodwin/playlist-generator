@@ -107,6 +107,18 @@ class SearchBar extends HTMLElement {
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(() => this.fetchSuggestedArtists_(), 300);
     });
+
+    this._outsideClickHandler = (event) => {
+      if (!event.composedPath().includes(this)) {
+        const artistListContainer = this.shadowRoot.querySelector('#artist-list-container');
+        if (artistListContainer) artistListContainer.remove();
+      }
+    };
+    document.addEventListener('click', this._outsideClickHandler);
+  }
+
+  disconnectedCallback() {
+    document.removeEventListener('click', this._outsideClickHandler);
   }
 
   fetchSuggestedArtists_() {
